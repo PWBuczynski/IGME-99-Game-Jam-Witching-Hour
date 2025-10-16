@@ -8,19 +8,26 @@ public class Player : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public static int score = 0;
+    public static int scoreGoal = 15;
     public static int coinAmount = 5;
     float speed = 5.0f;
+
+    // Stuff to spawn in coins
     public GameObject coinPrefab;
-
     public GameObject[] coinList = new GameObject[coinAmount];
-
     public Vector3[] spawnList = new Vector3[10];
     
+    //UI stuff
     public Text scoreAmount;
+    public Text winText;
+    public Text introText;
     
     //Nothing is needed in Start.
     void Start()
     {
+        winText.text = "";
+        introText.text = $"The goal of this game is to get {scoreGoal} coins. Good luck!";
+
         //Possible locations for coin spawning
         spawnList[0] = new Vector3(-6.54f,4.29f,0);
         spawnList[1] = new Vector3(-4.36f, 4.29f, 0);
@@ -63,18 +70,26 @@ public class Player : MonoBehaviour
         if(Input.GetKey(KeyCode.A))
         {
             transform.Translate(-speed * Time.deltaTime,0,0);
+            introText.text = "";
         }
         if(Input.GetKey(KeyCode.D))
         {
             transform.Translate(speed * Time.deltaTime, 0, 0);
+            introText.text = "";
         }
         if (Input.GetKey(KeyCode.W))
         {
             transform.Translate(0, speed * Time.deltaTime, 0);
+            introText.text = "";
         }
         if ((Input.GetKey(KeyCode.S)))
         {
             transform.Translate(0, -speed * Time.deltaTime, 0);
+            introText.text = "";
+        }
+        if (score >= scoreGoal)
+        {
+            winText.text = "You Win!";
         }
     }
     private void OnCollisionEnter2D(Collision2D collision)
@@ -82,10 +97,17 @@ public class Player : MonoBehaviour
         //If touching coin your score goes up and the coin disappears
         if (collision.gameObject.tag == "Coins")
         {
-            Destroy(collision.gameObject);
-            SpawnCoin(collision.gameObject);
-            score++;
             scoreAmount.text = "Score: " + score;
+            score++;
+            for (int i = 0; i < coinAmount; i++)
+            {
+                if(coinList[i] == collision.gameObject)
+                {
+                    Destroy(collision.gameObject);
+                    coinList[i] = SpawnCoin();
+                    break;
+                }
+            }
         }
         //If touching enemy the game resets
         if (collision.gameObject.tag == "Enemies")
@@ -114,11 +136,25 @@ public class Player : MonoBehaviour
             }
         }
     }
-    public GameObject SpawnCoin(GameObject coin)
+    public GameObject SpawnCoin()
     {
-        int randomInt = Random.Range(0,10);
-        GameObject newObject = Instantiate(coinPrefab, spawnList[randomInt], Quaternion.identity);
-        Debug.Log($"{spawnList[randomInt].x} {spawnList[randomInt].y} {spawnList[randomInt].z}");
-        return newObject;
+        Vector3 spawnPosition;
+        bool positionTaken;
+        do
+        {
+            positionTaken = false;
+            int randomInt = Random.Range(0, spawnList.Length);
+            spawnPosition = spawnList[randomInt];
+            foreach(GameObject coin in coinList)
+            {
+                if (coin != null && coin.transform.position == spawnPosition)
+                {
+                    positionTaken = true;
+                    break;
+                }
+            }
+        }
+        while (positionTaken);
+        return Instantiate(coinPrefab, spawnPosition, Quaternion.identity);
     }
 }
