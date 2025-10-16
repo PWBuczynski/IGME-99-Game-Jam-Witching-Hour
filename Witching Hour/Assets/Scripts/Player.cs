@@ -25,8 +25,9 @@ public class Player : MonoBehaviour
     //Nothing is needed in Start.
     void Start()
     {
+        // Setting up the text UI elements.
         winText.text = "";
-        introText.text = $"The goal of this game is to get {scoreGoal} coins. Good luck!";
+        introText.text = $"The goal of this game is to get {scoreGoal} coins while avoiding zombies Good luck!";
 
         //Possible locations for coin spawning
         spawnList[0] = new Vector3(-6.54f,4.29f,0);
