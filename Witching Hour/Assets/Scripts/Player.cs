@@ -17,19 +17,19 @@ public class Player : MonoBehaviour
     public GameObject[] coinList = new GameObject[coinAmount];
     public Vector3[] spawnList = new Vector3[10];
     
-    //UI stuff
+    // UI stuff
     public Text scoreAmount;
     public Text winText;
     public Text introText;
     
-    //Nothing is needed in Start.
+    // Nothing is needed in Start.
     void Start()
     {
         // Setting up the text UI elements.
         winText.text = "";
-        introText.text = $"The goal of this game is to get {scoreGoal} coins while avoiding zombies Good luck!";
+        introText.text = $"The goal of this game is to get {scoreGoal} coins while avoiding zombies. Good luck!";
 
-        //Possible locations for coin spawning
+        // Possible locations for coin spawning
         spawnList[0] = new Vector3(-6.54f,4.29f,0);
         spawnList[1] = new Vector3(-4.36f, 4.29f, 0);
         spawnList[2] = new Vector3(-8.69f, -1.04f, 0);
@@ -41,6 +41,7 @@ public class Player : MonoBehaviour
         spawnList[8] = new Vector3(6.32f, 2.38f, 0);
         spawnList[9] = new Vector3(2.13f, 2.65f, 0);
 
+        // Loops through the list and sees if there is already a coin in the given spawn location
         for (int i = 0; i < coinAmount; i++)
         {
             Vector3 spawnPosition;
@@ -67,7 +68,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Game controls
+        // Game controls
         if(Input.GetKey(KeyCode.A))
         {
             transform.Translate(-speed * Time.deltaTime,0,0);
@@ -95,7 +96,7 @@ public class Player : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        //If touching coin your score goes up and the coin disappears
+        // If touching coin your score goes up and the coin disappears
         if (collision.gameObject.tag == "Coins")
         {
             scoreAmount.text = "Score: " + score;
@@ -110,13 +111,13 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        //If touching enemy the game resets
+        // If touching enemy the game resets
         if (collision.gameObject.tag == "Enemies")
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             score = 0;
         }
-        //Bounce off walls
+        // Bounce off walls
         if (collision.gameObject.tag == "Walls")
         {
             if (Input.GetKey(KeyCode.A))
@@ -137,6 +138,10 @@ public class Player : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Spawning the coin when the player collects it
+    /// </summary>
+    /// <returns></returns>
     public GameObject SpawnCoin()
     {
         Vector3 spawnPosition;
